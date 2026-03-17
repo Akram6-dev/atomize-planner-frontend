@@ -14,9 +14,19 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (error) => {
-    const message = error.response?.data?.message || "Something went wrong";
-    const errors = error.response?.data?.errors || null;
-    return Promise.reject({ message, errors, status: error.response?.status });
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+
+    const customError = {
+      message: error.response?.data?.message || "Something went wrong",
+      errors: error.response?.data?.errors || null,
+      status: error.response?.status,
+      original: error,
+    };
+
+    return Promise.reject(customError);
   }
 );
 
