@@ -5,13 +5,10 @@ const ProgressBar = ({ value = 0, className = '' }) => {
 
   return (
     <div className={cn('w-full', className)}>
-      <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
         <div
-          className="h-full rounded-full transition-all duration-500 ease-out"
-          style={{
-            width: `${clamped}%`,
-            background: 'linear-gradient(90deg, var(--color-accent), var(--color-teal))',
-          }}
+          className="h-full rounded-full bg-gradient-to-r from-accent to-teal transition-all duration-500 ease-out"
+          style={{ width: `${clamped}%` }}
         />
       </div>
     </div>

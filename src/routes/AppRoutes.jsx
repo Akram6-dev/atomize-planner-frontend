@@ -15,6 +15,7 @@ import FocusPage from '../pages/FocusPage'
 import StatsPage from '../pages/StatsPage'
 import HistoryPage from '../pages/HistoryPage'
 import ProfilePage from '../pages/ProfilePage'
+import DeepFocusPage from '../pages/DeepFocusMode'
 
 const AppLayout = () => (
   <MainLayout>
@@ -25,6 +26,7 @@ const AppLayout = () => (
       <Route path="goals" element={<GoalsPage />} />
       <Route path="history" element={<HistoryPage />} />
       <Route path="profile" element={<ProfilePage />} />
+      <Route path="DeepFocus" element={<DeepFocusPage/>} />
     </Routes>
   </MainLayout>
 )

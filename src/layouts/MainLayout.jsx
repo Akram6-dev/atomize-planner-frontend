@@ -1,4 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom'
+import { cn } from '../utils'
 import homeIcon from '../assets/home.svg'
 import focusIcon from '../assets/kotak.svg'
 import statsIcon from '../assets/stats.svg'
@@ -7,12 +8,7 @@ const HomeIcon = ({ active }) => (
   <img
     src={homeIcon}
     alt="home"
-    style={{
-      width: '15px',
-      height: '15px',
-      opacity: active ? 1 : 0.5,
-      filter: active ? 'none' : 'grayscale(100%)',
-    }}
+    className={cn('h-[15px] w-[15px]', active ? 'opacity-100' : 'opacity-50 grayscale')}
   />
 )
 
@@ -20,12 +16,7 @@ const FocusIcon = ({ active }) => (
   <img
     src={focusIcon}
     alt="focus"
-    style={{
-      width: '15px',
-      height: '15px',
-      opacity: active ? 1 : 0.5,
-      filter: active ? 'none' : 'grayscale(100%)',
-    }}
+    className={cn('h-[15px] w-[15px]', active ? 'opacity-100' : 'opacity-50 grayscale')}
   />
 )
 
@@ -33,56 +24,50 @@ const StatsIcon = ({ active }) => (
   <img
     src={statsIcon}
     alt="stats"
-    style={{
-      width: '15px',
-      height: '15px',
-      opacity: active ? 1 : 0.5,
-      filter: active ? 'none' : 'grayscale(100%)',
-    }}
+    className={cn('h-[15px] w-[15px]', active ? 'opacity-100' : 'opacity-50 grayscale')}
   />
 )
 
 const AvatarIcon = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.8">
-    <circle cx="12" cy="8" r="4"/>
-    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" strokeLinecap="round"/>
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" className="text-accent" stroke="currentColor" strokeWidth="1.8">
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" strokeLinecap="round" />
   </svg>
 )
 
 const BOTTOM_NAV = [
-  { path: '/home',  label: 'Home',       Icon: HomeIcon  },
+  { path: '/home', label: 'Home', Icon: HomeIcon },
   { path: '/focus', label: 'Focus Mode', Icon: FocusIcon },
-  { path: '/stats', label: 'Stats',      Icon: StatsIcon },
+  { path: '/stats', label: 'Stats', Icon: StatsIcon },
 ]
 
 const TOP_LINKS = [
   { path: '/history', label: 'History' },
-  { path: '/goals',   label: 'Goals'   },
+  { path: '/goals', label: 'Goals' },
   { path: '/profile', label: 'Profile' },
 ]
 
 const NavItem = ({ path, label, Icon, isActive }) => {
   return (
-    <NavLink to={path} style={{ textDecoration:'none' }}>
-      <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'3px' }}>
-        
-        <div style={{
-          padding:'5px 16px',
-          borderRadius:'10px',
-          backgroundColor: isActive ? 'var(--color-teal-light)' : 'transparent',
-          transition:'all 0.2s',
-        }}>
+    <NavLink to={path} className="no-underline">
+      <div className="flex flex-col items-center gap-0.5">
+        <div
+          className={cn(
+            'rounded-[10px] px-4 py-1.5 transition-all duration-200',
+            isActive ? 'bg-teal-light' : 'bg-transparent'
+          )}
+        >
           <Icon active={isActive} />
         </div>
 
-        <span style={{
-          fontSize:'10px',
-          fontWeight: isActive ? '600' : '400',
-          color: isActive ? 'var(--color-accent)' : 'var(--color-text-muted)',
-        }}>
+        <span
+          className={cn(
+            'text-[10px]',
+            isActive ? 'font-semibold text-accent' : 'font-normal text-text-muted'
+          )}
+        >
           {label}
         </span>
-
       </div>
     </NavLink>
   )
@@ -92,80 +77,47 @@ const MainLayout = ({ children }) => {
   const location = useLocation()
 
   return (
-    <div style={{ width:'100%', minHeight:'100vh', backgroundColor:'#FAF9F6', backgroundImage:'radial-gradient(ellipse at top right, #BFEBE433 0%, transparent 55%)', display:'flex', flexDirection:'column' }}>
-      <div style={{ width:'100%', minHeight:'100vh', display:'flex', flexDirection:'column' }}>
-
-        {/* TOP NAV */}
-        <header style={{
-          position:'sticky', top:0, zIndex:40,
-          backgroundColor:'rgba(255,255,255,0.85)',
-          backdropFilter:'blur(12px)',
-          borderBottom:'1px solid var(--color-border)',
-          padding:'0 40px', height:'52px',
-          display:'flex', alignItems:'center', justifyContent:'space-between',
-        }}>
-          <NavLink to="/home" style={{ textDecoration:'none' }}>
-            <span style={{ fontFamily:'var(--font-display)', fontSize:'15px', color:'var(--color-text-primary)' }}>
-              AtomizePlanner
-            </span>
+    <div className="flex min-h-screen w-full flex-col bg-bg bg-[radial-gradient(ellipse_at_top_right,#BFEBE433_0%,transparent_55%)]">
+      <div className="flex min-h-screen w-full flex-col">
+        <header className="sticky top-0 z-40 flex h-[52px] items-center justify-between border-b border-border bg-white/85 px-10 backdrop-blur-md">
+          <NavLink to="/home" className="no-underline">
+            <span className="font-display text-[15px] text-text-primary">AtomizePlanner</span>
           </NavLink>
 
-          <nav style={{ display:'flex', gap:'20px' }}>
+          <nav className="flex gap-5">
             {TOP_LINKS.map(({ path, label }) => (
-              <NavLink key={path} to={path}
-                style={({ isActive }) => ({
-                  fontSize:'13px',
-                  fontWeight: isActive ? '600' : '400',
-                  color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
-                  textDecoration: 'none',
-                  borderBottom: isActive ? '1.5px solid var(--color-accent)' : 'none',
-                  paddingBottom: '2px',
-                })}>
+              <NavLink
+                key={path}
+                to={path}
+                className={({ isActive }) =>
+                  cn(
+                    'pb-0.5 text-[13px] no-underline',
+                    isActive
+                      ? 'border-b-[1.5px] border-accent font-semibold text-text-primary'
+                      : 'font-normal text-text-muted'
+                  )
+                }
+              >
                 {label}
               </NavLink>
             ))}
           </nav>
 
-          <div style={{
-            width:'32px', height:'32px', borderRadius:'50%',
-            backgroundColor:'var(--color-teal-light)',
-            border:'1.5px solid var(--color-teal-border)',
-            display:'flex', alignItems:'center', justifyContent:'center',
-          }}>
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border-[1.5px] border-teal-border bg-teal-light">
             <AvatarIcon />
           </div>
         </header>
 
-        {/* CONTENT */}
-        <main style={{ flex:1, paddingBottom:'76px', display:'flex', justifyContent:'center' }}>
-          <div style={{ width:'100%', maxWidth:'720px' }}>
-            {children}
-          </div>
+        <main className="flex flex-1 justify-center pb-[76px]">
+          <div className="w-full max-w-[720px]">{children}</div>
         </main>
 
-        {/* BOTTOM NAV */}
-        <nav style={{
-          position:'fixed', bottom:0, left:0, right:0, zIndex:40,
-          backgroundColor:'rgba(255,255,255,0.95)',
-          backdropFilter:'blur(12px)',
-          borderTop:'1px solid var(--color-border)',
-          display:'flex', alignItems:'center', justifyContent:'space-around',
-          padding:'8px 8px 12px',
-        }}>
+        <nav className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around border-t border-border bg-white/95 px-2 pb-3 pt-2 backdrop-blur-md">
           {BOTTOM_NAV.map(({ path, label, Icon }) => {
             const isActive = location.pathname === path || (path === '/home' && location.pathname === '/')
-            return (
-              <NavItem
-                key={path}
-                path={path}
-                label={label}
-                Icon={Icon}
-                isActive={isActive}
-              />
-            )
+            return <NavItem key={path} path={path} label={label} Icon={Icon} isActive={isActive} />
           })}
         </nav>
-
       </div>
     </div>
   )

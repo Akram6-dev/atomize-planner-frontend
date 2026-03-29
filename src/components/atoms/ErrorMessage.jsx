@@ -6,12 +6,13 @@ const ErrorMessage = ({ message, onRetry }) => (
         <path d="M12 8v4M12 16h.01" strokeLinecap="round" />
       </svg>
     </div>
-    <p className="text-sm font-medium text-[var(--color-text-primary)] mb-1">Terjadi Kesalahan</p>
-    <p className="text-xs text-[var(--color-text-muted)] mb-4 max-w-[240px]">{message}</p>
+    <p className="mb-1 text-sm font-medium text-text-primary">Terjadi Kesalahan</p>
+    <p className="mb-4 max-w-[240px] text-xs text-text-muted">{message}</p>
     {onRetry && (
       <button
+        type="button"
         onClick={onRetry}
-        className="text-xs font-medium text-[var(--color-accent)] hover:underline"
+        className="text-xs font-medium text-accent hover:underline"
       >
         Coba lagi
       </button>

@@ -5,7 +5,7 @@ const Spinner = ({ size = 'md', className = '' }) => {
   return (
     <span
       className={cn(
-        'inline-block border-2 border-[var(--color-border)] border-t-[var(--color-accent)] rounded-full animate-spin',
+        'inline-block animate-spin rounded-full border-2 border-border border-t-accent',
         sizes[size],
         className
       )}

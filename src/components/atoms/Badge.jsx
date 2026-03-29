@@ -1,14 +1,15 @@
-const Badge = ({ children, style = {} }) => (
-  <span style={{
-    display: 'inline-flex', alignItems: 'center', gap: '5px',
-    padding: '4px 10px', borderRadius: '20px',
-    backgroundColor: '#fff', border: '1px solid var(--color-border)',
-    fontSize: '11px', fontWeight: '600', color: 'var(--color-text-secondary)',
-    boxShadow: 'var(--shadow-sm)',
-    ...style,
-  }}>
-    {children}
-  </span>
+import { cn } from '../../utils'
+
+const base =
+  'inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-2.5 py-1 text-[11px] font-semibold text-text-secondary shadow-sm'
+
+const variants = {
+  default: '',
+  active: 'border-amber-200 bg-amber-50 text-amber-800',
+}
+
+const Badge = ({ children, className = '', variant = 'default' }) => (
+  <span className={cn(base, variants[variant] ?? variants.default, className)}>{children}</span>
 )
 
 export default Badge

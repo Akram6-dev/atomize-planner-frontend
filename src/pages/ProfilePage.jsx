@@ -1,17 +1,5 @@
 const PlaceholderPage = () => (
-  <div
-    style={{
-      minHeight: '60vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '32px',
-      textAlign: 'center',
-      fontSize: '20px',
-      fontWeight: 600,
-      color: 'var(--color-text-primary)',
-    }}
-  >
+  <div className="flex min-h-[60vh] items-center justify-center p-8 text-center text-xl font-semibold text-text-primary">
     belum selesai
   </div>
 )

@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react'
 import { cn } from '../../utils'
 import Button from '../atoms/Button'
@@ -6,7 +7,7 @@ import Badge from '../atoms/Badge'
 const StatusIcon = ({ status }) => {
   if (status === 'completed') {
     return (
-      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--color-accent)] flex items-center justify-center">
+      <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
           <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -15,8 +16,8 @@ const StatusIcon = ({ status }) => {
   }
   if (status === 'in_progress') {
     return (
-      <span className="flex-shrink-0 w-6 h-6 rounded-full border-2 border-[var(--color-accent)] flex items-center justify-center">
-        <span className="w-2 h-2 rounded-full bg-[var(--color-accent)]" />
+      <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full border-2 border-accent">
+        <span className="h-2 w-2 rounded-full bg-accent" />
       </span>
     )
   }
@@ -29,6 +30,7 @@ const StepItem = ({ step, taskId, onMarkWorking, onReatomize, onDeconstruct, ind
   const [loadingWorking, setLoadingWorking] = useState(false)
   const [loadingReatomize, setLoadingReatomize] = useState(false)
   const [loadingDeconstruct, setLoadingDeconstruct] = useState(false)
+  const navigate = useNavigate();
 
   const stepId = step.id ?? step._id
   const isCompleted  = step.status === 'completed'
@@ -37,7 +39,12 @@ const StepItem = ({ step, taskId, onMarkWorking, onReatomize, onDeconstruct, ind
 
   const handleMarkWorking = async () => {
     setLoadingWorking(true)
-    try { await onMarkWorking?.(stepId) } finally { setLoadingWorking(false) }
+    try {
+      await onMarkWorking?.(stepId)
+      navigate('/DeepFocus')
+    } finally {
+      setLoadingWorking(false)
+    }
   }
 
   const handleReatomize = async () => {
@@ -53,10 +60,8 @@ const StepItem = ({ step, taskId, onMarkWorking, onReatomize, onDeconstruct, ind
   return (
     <div
       className={cn(
-        'rounded-[var(--radius-md)] border transition-all duration-200 animate-fade-in',
-        isCurrent
-          ? 'bg-[var(--color-surface)] border-[var(--color-border)] shadow-[var(--shadow-md)]'
-          : 'bg-transparent border-transparent',
+        'rounded-md border transition-all duration-200 animate-fade-in',
+        isCurrent ? 'border-border bg-surface shadow-md' : 'border-transparent bg-transparent',
         isCompleted && 'opacity-60'
       )}
       style={{ animationDelay: `${index * 60}ms` }}
@@ -78,10 +83,10 @@ const StepItem = ({ step, taskId, onMarkWorking, onReatomize, onDeconstruct, ind
             className={cn(
               'text-sm leading-snug',
               isCompleted
-                ? 'line-through text-[var(--color-text-muted)]'
+                ? 'text-text-muted line-through'
                 : isCurrent
-                ? 'font-semibold text-[var(--color-text-primary)]'
-                : 'text-[var(--color-text-secondary)]'
+                  ? 'font-semibold text-text-primary'
+                  : 'text-text-secondary'
             )}
           >
             {step.title ?? step.description ?? step.name}
@@ -89,7 +94,7 @@ const StepItem = ({ step, taskId, onMarkWorking, onReatomize, onDeconstruct, ind
 
           {/* Description shown only for current step */}
           {isCurrent && step.description && step.description !== step.title && (
-            <p className="text-xs text-[var(--color-text-muted)] mt-1 leading-relaxed">
+            <p className="mt-1 text-xs leading-relaxed text-text-muted">
               {step.description}
             </p>
           )}

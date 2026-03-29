@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { cn } from '../utils'
 import useTasks from '../hooks/useTasks'
 import useTaskDetail from '../hooks/useTaskDetail'
 import Spinner from '../components/atoms/Spinner'
@@ -9,66 +10,107 @@ import ProgressSection from '../components/atoms/ProgressSection'
 import icon_pensil from '../assets/pensil.svg'
 
 const CircleDone = () => (
-  <div style={{ width:22, height:22, borderRadius:'50%', backgroundColor:'var(--color-accent)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:2 }}>
+  <div className="mt-0.5 flex h-[22px] w-[22px] flex-shrink-0 items-center justify-center rounded-full bg-accent">
     <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-      <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   </div>
 )
 
 const CircleEmpty = ({ isCurrent }) => (
-  <div style={{ width:22, height:22, borderRadius:'50%', border: isCurrent ? '2px solid var(--color-text-secondary)' : '1.5px solid var(--color-border)', backgroundColor:'transparent', flexShrink:0, marginTop:2 }} />
+  <div
+    className={cn(
+      'mt-0.5 h-[22px] w-[22px] flex-shrink-0 rounded-full border bg-transparent',
+      isCurrent ? 'border-2 border-text-secondary' : 'border-[1.5px] border-border'
+    )}
+  />
 )
 
-const StepRow = ({ step, isCurrent, onToggle, toggling }) => {
+const StepRow = ({ step, isCurrent, onToggle, toggling, onEnterDeepFocus }) => {
   const done = step.is_completed
   return (
-    <div style={{
-      borderRadius: isCurrent ? '14px' : 0,
-      border: isCurrent ? '1px solid var(--color-border)' : 'none',
-      borderBottom: !isCurrent ? '1px solid var(--color-border)' : 'none',
-      backgroundColor: isCurrent ? '#fff' : 'transparent',
-      boxShadow: isCurrent ? '0 2px 12px rgba(0,0,0,0.07)' : 'none',
-      padding: isCurrent ? '14px' : '12px 0',
-      marginBottom: isCurrent ? '6px' : 0,
-      opacity: toggling ? 0.5 : 1,
-      transition: 'opacity 0.2s',
-    }}>
-      <div style={{ display:'flex', alignItems:'flex-start', gap:'12px' }}>
-        <button onClick={() => isCurrent ? onToggle(step.id, step.is_completed) : null}
-          style={{ background:'none', border:'none', cursor: isCurrent ? 'pointer' : 'default', padding:0, flexShrink:0 }}>
+    <div
+      role={isCurrent ? 'button' : undefined}
+      tabIndex={isCurrent ? 0 : undefined}
+      onClick={
+        isCurrent
+          ? () => {
+              onEnterDeepFocus?.()
+            }
+          : undefined
+      }
+      onKeyDown={
+        isCurrent
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onEnterDeepFocus?.()
+              }
+            }
+          : undefined
+      }
+      className={cn(
+        'transition-opacity duration-200',
+        isCurrent ? 'mb-1.5 rounded-[14px] border border-border bg-white p-3.5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]' : 'border-b border-border py-3',
+        !isCurrent && 'rounded-none border-x-0 border-t-0',
+        toggling && 'opacity-50',
+        isCurrent && 'cursor-pointer'
+      )}
+    >
+      <div className="flex items-start gap-3">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            if (isCurrent) onToggle(step.id, step.is_completed)
+          }}
+          className={cn(
+            'flex-shrink-0 border-none bg-transparent p-0',
+            isCurrent ? 'cursor-pointer' : 'cursor-default'
+          )}
+        >
           {done ? <CircleDone /> : <CircleEmpty isCurrent={isCurrent} />}
         </button>
 
-        <div style={{ flex:1 }}>
+        <div className="min-w-0 flex-1">
           {isCurrent && (
-            <div style={{ display:'inline-flex', alignItems:'center', gap:'5px', backgroundColor:'var(--color-warning-light)', border:'1px solid var(--color-warning-border)', borderRadius:'20px', padding:'2px 9px', marginBottom:'7px' }}>
-              <div style={{ width:6, height:6, borderRadius:'50%', backgroundColor:'var(--color-warning)' }} />
-              <span style={{ fontSize:'9px', fontWeight:'700', color:'var(--color-warning)', letterSpacing:'0.6px', textTransform:'uppercase' }}>Current Focus</span>
+            <div className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-warning-border bg-warning-light px-2 py-0.5">
+              <div className="h-1.5 w-1.5 rounded-full bg-warning" />
+              <span className="text-[9px] font-bold uppercase tracking-wide text-warning">Current Focus</span>
             </div>
           )}
 
-          <p style={{
-            fontSize: isCurrent ? '14px' : '13px',
-            fontWeight: isCurrent ? '600' : '400',
-            color: done ? 'var(--color-text-muted)' : isCurrent ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-            textDecoration: done ? 'line-through' : 'none',
-            lineHeight: '1.45',
-          }}>
+          <p
+            className={cn(
+              'leading-[1.45]',
+              done && 'text-text-muted line-through',
+              !done && isCurrent && 'text-sm font-semibold text-text-primary',
+              !done && !isCurrent && 'text-[13px] text-text-secondary'
+            )}
+          >
             {step.title}
           </p>
 
           {isCurrent && (
-            <div style={{ display:'flex', gap:'8px', marginTop:'12px' }}>
-              <button onClick={() => onToggle(step.id, false)}
-                style={{ display:'flex', alignItems:'center', gap:'5px', padding:'6px 13px', backgroundColor:'#3C6660', border:'1px solid var(--color-border)', borderRadius:'8px', fontSize:'12px', fontWeight:'500', color:'#DCFFF8', cursor:'pointer' }}>
+            <div className="mt-3 flex gap-2" onClick={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                onClick={() => onToggle(step.id, false)}
+                className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-[#3C6660] px-3 py-1.5 text-xs font-medium text-[#DCFFF8]"
+              >
                 <img src={icon_pensil} alt="icon" width="12" height="12" />
                 Mark Working
               </button>
-              <button style={{ display:'flex', alignItems:'center', gap:'5px', padding:'6px 13px', backgroundColor:'transparent', border:'1px solid var(--color-border)', borderRadius:'8px', fontSize:'12px', fontWeight:'500', color:'var(--color-text-secondary)', cursor:'pointer' }}>
+              <button
+                type="button"
+                className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-transparent px-3 py-1.5 text-xs font-medium text-text-secondary"
+              >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M1 4v6h6M23 20v-6h-6" strokeLinecap="round"/>
-                  <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15" strokeLinecap="round"/>
+                  <path d="M1 4v6h6M23 20v-6h-6" strokeLinecap="round" />
+                  <path
+                    d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"
+                    strokeLinecap="round"
+                  />
                 </svg>
                 ↺ Re-Atomize
               </button>
@@ -81,44 +123,55 @@ const StepRow = ({ step, isCurrent, onToggle, toggling }) => {
 }
 
 const FocusPage = () => {
-  const { tasks, setTasks, loading, error, fetchTasks,} = useTasks()
+  const { tasks, setTasks, loading, error, fetchTasks } = useTasks()
   const [activeTaskId, setActiveTaskId] = useState(null)
-  const [toggling, setToggling]   = useState(null)
+  const [toggling, setToggling] = useState(null)
   const navigate = useNavigate()
 
-  // Pick first task with incomplete step, or first task
-  const focusId = activeTaskId
-    ?? tasks.find(t => t.micro_steps?.some(s => !s.is_completed))?.id
-    ?? tasks[0]?.id
-    ?? null
+  const focusId =
+    activeTaskId ?? tasks.find((t) => t.micro_steps?.some((s) => !s.is_completed))?.id ?? tasks[0]?.id ?? null
 
   const { task, toggleStep } = useTaskDetail(String(focusId), tasks, setTasks)
 
-  const steps      = task?.micro_steps ?? []
-  const progress   = task?.progress_percentage ?? 0
-  const done       = steps.filter(s => s.is_completed).length
-  const currentIdx = steps.findIndex(s => !s.is_completed)
-  const complexStep = steps.find(s => !s.is_completed && s.estimated_duration >= 30) ?? null
+  const steps = task?.micro_steps ?? []
+  const progress = task?.progress_percentage ?? 0
+  const done = steps.filter((s) => s.is_completed).length
+  const currentIdx = steps.findIndex((s) => !s.is_completed)
+  const complexStep = steps.find((s) => !s.is_completed && s.estimated_duration >= 30) ?? null
 
   const handleToggle = async (stepId, currentIsCompleted) => {
     setToggling(stepId)
-    try { await toggleStep(stepId, currentIsCompleted) }
-    finally { setToggling(null) }
+    try {
+      await toggleStep(stepId, currentIsCompleted)
+    } finally {
+      setToggling(null)
+    }
   }
 
-  if (loading) return <div style={{ display:'flex', justifyContent:'center', padding:'80px 0' }}><Spinner size="lg"/></div>
-  if (error)   return <ErrorMessage message={error} onRetry={fetchTasks}/>
+  if (loading)
+    return (
+      <div className="flex justify-center py-20">
+        <Spinner size="lg" />
+      </div>
+    )
+  if (error) return <ErrorMessage message={error} onRetry={fetchTasks} />
 
   return (
-    <div style={{ padding:'22px 20px 100px', animation:'fadeIn 0.25s ease' }}>
-
-      {/* Task selector tabs (if multiple tasks) */}
+    <div className="animate-fade-in px-5 pb-[100px] pt-[22px]">
       {tasks.length > 1 && (
-        <div style={{ display:'flex', gap:'8px', overflowX:'auto', marginBottom:'20px', paddingBottom:'4px' }}>
-          {tasks.map(t => (
-            <button key={t.id} onClick={() => setActiveTaskId(t.id)}
-              style={{ flexShrink:0, padding:'5px 12px', borderRadius:'20px', border:'1px solid var(--color-border)', backgroundColor: focusId === t.id ? 'var(--color-accent)' : '#fff', color: focusId === t.id ? '#fff' : 'var(--color-text-secondary)', fontSize:'11px', fontWeight:'500', cursor:'pointer', whiteSpace:'nowrap' }}>
-              {t.title.slice(0, 24)}{t.title.length > 24 ? '…' : ''}
+        <div className="-mx-1 mb-5 flex gap-2 overflow-x-auto pb-1">
+          {tasks.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setActiveTaskId(t.id)}
+              className={cn(
+                'flex-shrink-0 cursor-pointer whitespace-nowrap rounded-full border border-border px-3 py-1.5 text-[11px] font-medium',
+                focusId === t.id ? 'bg-accent text-white' : 'bg-white text-text-secondary'
+              )}
+            >
+              {t.title.slice(0, 24)}
+              {t.title.length > 24 ? '…' : ''}
             </button>
           ))}
         </div>
@@ -126,23 +179,14 @@ const FocusPage = () => {
 
       {task ? (
         <>
-          {/* CURRENT OBJECTIVE */}
-          <p style={{ fontSize:'10px', fontWeight:'600', textTransform:'uppercase', letterSpacing:'1px', color:'var(--color-text-muted)', marginBottom:'6px' }}>
-            Current Objective
-          </p>
-          <h1 style={{ fontFamily:'var(--font-display)', fontSize:'30px', fontWeight:'400', color:'var(--color-text-primary)', lineHeight:'1.2', marginBottom:'22px' }}>
+          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-text-muted">Current Objective</p>
+          <h1 className="mb-[22px] font-display text-[30px] font-normal leading-tight text-text-primary">
             {task.title}
           </h1>
 
-          {/* Progress */}
-            <ProgressSection
-              progress={progress}
-              done={done}
-              total={steps.length}
-            />
+          <ProgressSection progress={progress} done={done} total={steps.length} />
 
-          {/* Steps */}
-          <div style={{ display:'flex', flexDirection:'column', marginBottom:'28px' }}>
+          <div className="mb-7 flex flex-col">
             {steps.map((step, i) => (
               <StepRow
                 key={step.id}
@@ -150,31 +194,34 @@ const FocusPage = () => {
                 isCurrent={i === currentIdx}
                 toggling={toggling === step.id}
                 onToggle={handleToggle}
+                onEnterDeepFocus={() => navigate('/DeepFocus')}
               />
             ))}
           </div>
 
-          {/* Bottom panels */}
-          <div style={{ display:'flex', gap:'12px' }}>
-            <div style={{ flex:'1 1 0', backgroundColor:'#fff', border:'1px solid var(--color-border)', borderRadius:'16px', padding:'16px' }}>
-              <div style={{ display:'flex', alignItems:'center', gap:'7px', marginBottom:'8px' }}>
-                <span style={{ fontSize:'18px' }}>💡</span>
-                <span style={{ fontSize:'12px', fontWeight:'700', color:'var(--color-text-primary)' }}>AI Suggestion</span>
+          <div className="flex gap-3">
+            <div className="min-w-0 flex-1 rounded-2xl border border-border bg-white p-4">
+              <div className="mb-2 flex items-center gap-[7px]">
+                <span className="text-lg">💡</span>
+                <span className="text-xs font-bold text-text-primary">AI Suggestion</span>
               </div>
-              <p style={{ fontSize:'11px', color:'var(--color-text-secondary)', lineHeight:'1.6' }}>
-                You've spent 4 hours on research today. AtomizePlanner suggests a 15-minute cognitive break before shifting.
+              <p className="text-[11px] leading-relaxed text-text-secondary">
+                You&apos;ve spent 4 hours on research today. AtomizePlanner suggests a 15-minute cognitive break before
+                shifting.
               </p>
             </div>
 
             {complexStep && (
-              <div style={{ flex:'1 1 0', backgroundColor:'var(--color-teal-light)', border:'1px solid var(--color-teal-border)', borderRadius:'16px', padding:'16px' }}>
-                <p style={{ fontSize:'10px', fontWeight:'800', textTransform:'uppercase', letterSpacing:'0.6px', color:'var(--color-teal)', marginBottom:'7px' }}>
-                  Complexity Alert
+              <div className="min-w-0 flex-1 rounded-2xl border border-teal-border bg-teal-light p-4">
+                <p className="mb-1.5 text-[10px] font-extrabold uppercase tracking-wide text-teal">Complexity Alert</p>
+                <p className="mb-3 text-[11px] leading-relaxed text-text-secondary">
+                  Step &quot;{complexStep.title.slice(0, 28)}...&quot; seems broad. Would you like to break it into
+                  specific steps?
                 </p>
-                <p style={{ fontSize:'11px', color:'var(--color-text-secondary)', lineHeight:'1.6', marginBottom:'12px' }}>
-                  Step "{complexStep.title.slice(0, 28)}..." seems broad. Would you like to break it into specific steps?
-                </p>
-                <button style={{ display:'inline-flex', alignItems:'center', padding:'7px 14px', backgroundColor:'var(--color-teal)', border:'none', borderRadius:'8px', fontSize:'10px', fontWeight:'700', color:'#fff', cursor:'pointer', letterSpacing:'0.5px', textTransform:'uppercase' }}>
+                <button
+                  type="button"
+                  className="inline-flex cursor-pointer items-center rounded-lg border-none bg-teal px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-white"
+                >
                   Deconstruct Now
                 </button>
               </div>
@@ -182,19 +229,20 @@ const FocusPage = () => {
           </div>
         </>
       ) : (
-        /* Empty state */
-        <div style={{ textAlign:'center', padding:'60px 20px' }}>
-          <div style={{ fontSize:'40px', marginBottom:'12px' }}>🎯</div>
-          <p style={{ fontSize:'14px', fontWeight:'600', color:'var(--color-text-primary)', marginBottom:'6px' }}>No active task</p>
-          <p style={{ fontSize:'12px', color:'var(--color-text-muted)', marginBottom:'20px' }}>Create a goal and AI will break it into steps.</p>
-          <button onClick={() => navigate('/home')}
-            style={{ padding:'10px 20px', backgroundColor:'var(--color-accent)', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:'500', color:'#fff', cursor:'pointer' }}>
+        <div className="px-5 py-[60px] text-center">
+          <div className="mb-3 text-[40px]">🎯</div>
+          <p className="mb-1.5 text-sm font-semibold text-text-primary">No active task</p>
+          <p className="mb-5 text-xs text-text-muted">Create a goal and AI will break it into steps.</p>
+          <button
+            type="button"
+            onClick={() => navigate('/home')}
+            className="cursor-pointer rounded-[10px] border-none bg-accent px-5 py-2.5 text-[13px] font-medium text-white"
+          >
             ✨ New Goal
           </button>
         </div>
       )}
 
-      {/* FAB */}
       <AddGoalButton />
     </div>
   )

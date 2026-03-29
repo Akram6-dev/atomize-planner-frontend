@@ -1,8 +1,8 @@
+import { cn } from '../../utils'
 import Section from '../atoms/Section'
 import pensil from '../../assets/gambar_pensil.png'
 import bulat from '../../assets/lima_bulat.png'
 import kotak3 from '../../assets/kotak.svg'
-
 
 const steps = [
   {
@@ -11,7 +11,7 @@ const steps = [
     desc: "Don't filter. Simply express the overwhelming project in natural language. Our AI listens to the context, not just the words.",
     active: false,
     img: pensil,
-    imgStyle: { width: '100%', borderRadius: '8px', objectFit: 'cover' },
+    imgClassName: 'w-full rounded-lg object-cover',
   },
   {
     num: '02',
@@ -19,6 +19,7 @@ const steps = [
     desc: 'Our engine identifies logical micro-steps, estimating energy requirements and identifying dependencies in seconds.',
     active: true,
     img: bulat,
+    imgClassName: 'w-full rounded-lg object-cover',
   },
   {
     num: '03',
@@ -26,37 +27,57 @@ const steps = [
     desc: 'One task. One screen. No distractions. The UI adapts to eliminate everything but the current micro-step.',
     active: false,
     img: kotak3,
-    imgStyle: { width: '40px', height: '40px', objectFit: 'contain' },
+    imgClassName: 'h-10 w-10 object-contain',
     imgAlign: 'flex-end',
   },
 ]
 
 const ProcessSection = () => (
-  <div style={{ backgroundColor: '#FAF9F6', padding: '96px 0' }}>
+  <div className="bg-bg py-24">
     <Section>
-      <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-muted)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>How it works</p>
-      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '36px', fontWeight: '400', color: 'var(--color-text-primary)', marginBottom: '8px' }}>The Atomization Process</h2>
-      <p style={{ fontSize: '15px', color: 'var(--color-text-muted)', marginBottom: '48px', maxWidth: '520px' }}>
+      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-text-muted">How it works</p>
+      <h2 className="mb-2 font-display text-4xl font-normal text-text-primary">The Atomization Process</h2>
+      <p className="mb-12 max-w-[520px] text-[15px] text-text-muted">
         Complexity is the enemy of execution. We dismantle obstacles using our signature three-stage ritual.
       </p>
 
-      {/* Grid 4:5:3 ratio */}
-      <div style={{ display: 'grid', gridTemplateColumns: '4fr 5fr 3fr', gap: '20px' }}>
+      <div className="grid gap-5 [grid-template-columns:4fr_5fr_3fr]">
         {steps.map((s) => (
-          <div key={s.num} style={{
-            borderRadius: '20px',
-            backgroundColor: s.active ? 'var(--color-accent-dark)' : '#FAF9F6',
-            border: `1px solid ${s.active ? 'transparent' : 'var(--color-border)'}`,
-            padding: '32px 28px',
-            display: 'flex', flexDirection: 'column', minHeight: '320px',
-            overflow: 'hidden',
-          }}>
-            <p style={{ fontSize: '34px', fontWeight: '700', color: s.active ? 'rgba(255,255,255,0.25)' : 'var(--color-border)', marginBottom: '18px' }}>{s.num}</p>
-            <p style={{ fontSize: '18px', fontWeight: '600', color: s.active ? '#fff' : 'var(--color-text-primary)', marginBottom: '12px' }}>{s.title}</p>
-            <p style={{ fontSize: '14px', color: s.active ? 'rgba(255,255,255,0.65)' : 'var(--color-text-muted)', lineHeight: '1.75' }}>{s.desc}</p>
-            <div style={{ marginTop: '56px', display: 'flex', justifyContent: s.imgAlign ?? (s.active ? 'center' : 'flex-start'), alignItems: 'flex-end' }}>
-              {s.img && <img src={s.img} alt="" style={s.imgStyle} />}
-              {s.icon && s.icon}
+          <div
+            key={s.num}
+            className={cn(
+              'flex min-h-[320px] flex-col overflow-hidden rounded-[20px] p-8 px-7',
+              s.active ? 'border-transparent bg-accent-dark' : 'border border-border bg-bg'
+            )}
+          >
+            <p
+              className={cn(
+                'mb-[18px] text-[34px] font-bold',
+                s.active ? 'text-white/25' : 'text-border'
+              )}
+            >
+              {s.num}
+            </p>
+            <p
+              className={cn('mb-3 text-lg font-semibold', s.active ? 'text-white' : 'text-text-primary')}
+            >
+              {s.title}
+            </p>
+            <p
+              className={cn(
+                'text-sm leading-[1.75]',
+                s.active ? 'text-white/65' : 'text-text-muted'
+              )}
+            >
+              {s.desc}
+            </p>
+            <div
+              className={cn(
+                'mt-14 flex items-end',
+                s.imgAlign === 'flex-end' ? 'justify-end' : s.active ? 'justify-center' : 'justify-start'
+              )}
+            >
+              {s.img && <img src={s.img} alt="" className={s.imgClassName} />}
             </div>
           </div>
         ))}
